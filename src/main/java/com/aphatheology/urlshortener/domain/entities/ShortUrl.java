@@ -17,7 +17,7 @@ public class ShortUrl {
     @Column(nullable = false)
     private String originalUrl;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
 

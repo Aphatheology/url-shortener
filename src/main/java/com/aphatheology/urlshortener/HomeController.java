@@ -1,6 +1,7 @@
 package com.aphatheology.urlshortener;
 
 import com.aphatheology.urlshortener.domain.entities.ShortUrl;
+import com.aphatheology.urlshortener.domain.models.ShortUrlDto;
 import com.aphatheology.urlshortener.services.ShortUrlService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String home(Model model) {
-        List<ShortUrl> shortUrls = shortUrlService.getPublicShortUrls();
+        List<ShortUrlDto> shortUrls = shortUrlService.getPublicShortUrls();
         model.addAttribute("shortUrls", shortUrls);
         model.addAttribute("baseUrl", "localhost:8080");
         return "index";
