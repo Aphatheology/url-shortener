@@ -2,6 +2,7 @@ package com.aphatheology.urlshortener.domain.entities;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,8 +23,8 @@ public class ShortUrl {
     private User createdBy;
 
     private Boolean isPrivate;
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime expiresAt;
+    private Instant  createdAt = Instant.now();
+    private Instant expiresAt;
     private Long clickCount;
 
     public Long getId() {
@@ -66,19 +67,19 @@ public class ShortUrl {
         isPrivate = aPrivate;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant  getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant  createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getExpiresAt() {
+    public Instant  getExpiresAt() {
         return expiresAt;
     }
 
-    public void setExpiresAt(LocalDateTime expiresAt) {
+    public void setExpiresAt(Instant  expiresAt) {
         this.expiresAt = expiresAt;
     }
 

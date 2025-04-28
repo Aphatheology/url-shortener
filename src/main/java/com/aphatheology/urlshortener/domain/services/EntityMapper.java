@@ -1,4 +1,4 @@
-package com.aphatheology.urlshortener.services;
+package com.aphatheology.urlshortener.domain.services;
 
 import com.aphatheology.urlshortener.domain.entities.ShortUrl;
 import com.aphatheology.urlshortener.domain.entities.User;
@@ -19,8 +19,8 @@ public class EntityMapper {
         }
         return new ShortUrlDto(
                 shortUrl.getId(),
-                shortUrl.getOriginalUrl(),
                 shortUrl.getShortKey(),
+                shortUrl.getOriginalUrl(),
                 userDto,
                 shortUrl.getPrivate(),
                 shortUrl.getCreatedAt(),
