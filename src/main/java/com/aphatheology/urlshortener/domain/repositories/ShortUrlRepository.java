@@ -1,7 +1,6 @@
 package com.aphatheology.urlshortener.domain.repositories;
 
 import com.aphatheology.urlshortener.domain.entities.ShortUrl;
-import jakarta.persistence.Entity;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

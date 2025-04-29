@@ -1,6 +1,7 @@
 package com.aphatheology.urlshortener.web.controllers;
 
 import com.aphatheology.urlshortener.ApplicationProperties;
+import com.aphatheology.urlshortener.domain.entities.User;
 import com.aphatheology.urlshortener.domain.exceptions.ShortUrlNotFoundException;
 import com.aphatheology.urlshortener.domain.models.CreateShortUrlCmd;
 import com.aphatheology.urlshortener.domain.models.ShortUrlDto;
@@ -24,17 +25,21 @@ public class HomeController {
 
     private final ShortUrlService shortUrlService;
     private final ApplicationProperties properties;
+    private final SecurityUtils securityUtils;
 
-    public HomeController(ShortUrlService shortUrlService, ApplicationProperties properties) {
+    public HomeController(ShortUrlService shortUrlService, ApplicationProperties properties, SecurityUtils securityUtils) {
         this.shortUrlService = shortUrlService;
         this.properties = properties;
+        this.securityUtils = securityUtils;
     }
 
     @GetMapping("/")
     public String home(Model model) {
         List<ShortUrlDto> shortUrls = shortUrlService.getPublicShortUrls();
+        User user = securityUtils.getCurrentUser();
         model.addAttribute("shortUrls", shortUrls);
         model.addAttribute("baseUrl", properties.baseUrl());
+        model.addAttribute("user", user);
         model.addAttribute("createShortUrlForm", new CreateShortUrlForm(""));
         return "index";
     }
@@ -53,7 +58,7 @@ public class HomeController {
 
         try {
             CreateShortUrlCmd cmd = new CreateShortUrlCmd(form.originalUrl());
-            var shortUrl = shortUrlService.createShortUrl(cmd);
+            shortUrlService.createShortUrl(cmd);
             redirectAttributes.addFlashAttribute("successMessage", "Short URL created successfully!");
 
         } catch (Exception e) {
@@ -64,13 +69,18 @@ public class HomeController {
     }
 
     @GetMapping("s/{shortKey}")
-    public String redirectToOriginalUrl(@PathVariable String shortKey, RedirectAttributes redirectAttributes) {
+    public String redirectToOriginalUrl(@PathVariable String shortKey) {
         Optional<ShortUrlDto> shortUrlDtoOptional = shortUrlService.getShortUrl(shortKey);
         if (shortUrlDtoOptional.isEmpty()) {
             throw new ShortUrlNotFoundException("Short URL not found");
         }
         ShortUrlDto shortUrl = shortUrlDtoOptional.get();
         return "redirect:" + shortUrl.originalUrl();
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
     }
 
 }
