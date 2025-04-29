@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class EntityMapper {
 
-    public ShortUrlDto toDto(ShortUrl shortUrl) {
+    public ShortUrlDto toShortUrlDto(ShortUrl shortUrl) {
         UserDto userDto = null;
         if (shortUrl.getCreatedBy() != null) {
             userDto = new UserDto(
@@ -29,7 +29,7 @@ public class EntityMapper {
         );
     }
 
-    public UserDto toDto(User user) {
+    public UserDto toUserDto(User user) {
         return new UserDto(
                 user.getId(),
                 user.getName()

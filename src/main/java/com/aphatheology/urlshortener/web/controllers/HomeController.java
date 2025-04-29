@@ -1,6 +1,7 @@
 package com.aphatheology.urlshortener.web.controllers;
 
 import com.aphatheology.urlshortener.ApplicationProperties;
+import com.aphatheology.urlshortener.domain.exceptions.ShortUrlNotFoundException;
 import com.aphatheology.urlshortener.domain.models.CreateShortUrlCmd;
 import com.aphatheology.urlshortener.domain.models.ShortUrlDto;
 import com.aphatheology.urlshortener.domain.services.ShortUrlService;
@@ -11,10 +12,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class HomeController {
@@ -58,6 +61,16 @@ public class HomeController {
         }
 
         return "redirect:/";
+    }
+
+    @GetMapping("s/{shortKey}")
+    public String redirectToOriginalUrl(@PathVariable String shortKey, RedirectAttributes redirectAttributes) {
+        Optional<ShortUrlDto> shortUrlDtoOptional = shortUrlService.getShortUrl(shortKey);
+        if (shortUrlDtoOptional.isEmpty()) {
+            throw new ShortUrlNotFoundException("Short URL not found");
+        }
+        ShortUrlDto shortUrl = shortUrlDtoOptional.get();
+        return "redirect:" + shortUrl.originalUrl();
     }
 
 }

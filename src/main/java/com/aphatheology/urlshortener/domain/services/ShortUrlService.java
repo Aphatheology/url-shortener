@@ -6,12 +6,15 @@ import com.aphatheology.urlshortener.domain.models.CreateShortUrlCmd;
 import com.aphatheology.urlshortener.domain.models.ShortUrlDto;
 import com.aphatheology.urlshortener.domain.repositories.ShortUrlRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
+@Transactional(readOnly = true)
 public class ShortUrlService {
 
     private final ShortUrlRepository shortUrlRepository;
@@ -25,9 +28,10 @@ public class ShortUrlService {
     }
 
     public List<ShortUrlDto> getPublicShortUrls() {
-        return shortUrlRepository.findPublicShortUrls().stream().map(entityMapper::toDto).toList();
+        return shortUrlRepository.findPublicShortUrls().stream().map(entityMapper::toShortUrlDto).toList();
     }
 
+    @Transactional
     public ShortUrlDto createShortUrl(CreateShortUrlCmd cmd) {
         if(properties.validateOriginalUrl()) {
             boolean validUrl = UrlValidator.isUrlExists(cmd.originalUrl());
@@ -47,7 +51,7 @@ public class ShortUrlService {
         shortUrl.setExpiresAt(Instant.now().plus(properties.expiryInDays(), java.time.temporal.ChronoUnit.DAYS));
         shortUrlRepository.save(shortUrl);
 
-        return entityMapper.toDto(shortUrl);
+        return entityMapper.toShortUrlDto(shortUrl);
     }
 
     private String generateUniqueShortKey() {
@@ -69,5 +73,20 @@ public class ShortUrlService {
             shortKey.append(CHARACTERS.charAt(index));
         }
         return shortKey.toString();
+    }
+
+    @Transactional
+    public Optional<ShortUrlDto> getShortUrl(String shortKey) {
+        Optional<ShortUrl> shortUrlOptional = shortUrlRepository.findByShortKey(shortKey);
+        if(shortUrlOptional.isEmpty()) return Optional.empty();
+        ShortUrl shortUrl = shortUrlOptional.get();
+        if(shortUrl.getExpiresAt() != null && shortUrl.getExpiresAt().isBefore(Instant.now())) {
+            return Optional.empty();
+        }
+
+        shortUrl.setClickCount(shortUrl.getClickCount() + 1);
+        shortUrlRepository.save(shortUrl);
+
+        return shortUrlOptional.map(entityMapper::toShortUrlDto);
     }
 }
