@@ -1,6 +1,8 @@
 package com.aphatheology.urlshortener.domain.repositories;
 
 import com.aphatheology.urlshortener.domain.entities.ShortUrl;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,4 +24,8 @@ public interface ShortUrlRepository extends JpaRepository<ShortUrl, Long> {
     boolean existsByShortKey(String shortKey);
 
     Optional<ShortUrl> findByShortKey(String shortKey);
+
+    @Query("SELECT s FROM ShortUrl s WHERE s.isPrivate = false")
+    @EntityGraph(attributePaths = {"createdBy"})
+    Page<ShortUrl> findPublicShortUrlsPageable(Pageable pageable);
 }

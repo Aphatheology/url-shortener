@@ -3,9 +3,14 @@ package com.aphatheology.urlshortener.domain.services;
 import com.aphatheology.urlshortener.ApplicationProperties;
 import com.aphatheology.urlshortener.domain.entities.ShortUrl;
 import com.aphatheology.urlshortener.domain.models.CreateShortUrlCmd;
+import com.aphatheology.urlshortener.domain.models.PagedResult;
 import com.aphatheology.urlshortener.domain.models.ShortUrlDto;
 import com.aphatheology.urlshortener.domain.repositories.ShortUrlRepository;
 import com.aphatheology.urlshortener.domain.repositories.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,8 +37,12 @@ public class ShortUrlService {
         this.userRepository = userRepository;
     }
 
-    public List<ShortUrlDto> getPublicShortUrls() {
-        return shortUrlRepository.findPublicShortUrls().stream().map(entityMapper::toShortUrlDto).toList();
+    public PagedResult<ShortUrlDto> getPublicShortUrls(int page, int size) {
+        page = page > 1 ? page - 1 : 0;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+//        return shortUrlRepository.findPublicShortUrls().stream().map(entityMapper::toShortUrlDto).toList();
+        Page<ShortUrlDto> shortUrlDtoPage = shortUrlRepository.findPublicShortUrlsPageable(pageable).map(entityMapper::toShortUrlDto);
+        return PagedResult.from(shortUrlDtoPage);
     }
 
     @Transactional
