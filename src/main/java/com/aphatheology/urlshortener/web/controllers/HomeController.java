@@ -43,6 +43,7 @@ public class HomeController {
         PagedResult<ShortUrlDto> shortUrls = shortUrlService.getPublicShortUrls(page, size);
         User user = securityUtils.getCurrentUser();
         model.addAttribute("shortUrls", shortUrls);
+        model.addAttribute("paginationUrl", "/");
         model.addAttribute("baseUrl", properties.baseUrl());
         model.addAttribute("user", user);
         model.addAttribute("createShortUrlForm", new CreateShortUrlForm("", false, null));
@@ -57,6 +58,7 @@ public class HomeController {
         if (bindingResult.hasErrors()) {
             PagedResult<ShortUrlDto> shortUrls = shortUrlService.getPublicShortUrls(1, 10);
             model.addAttribute("shortUrls", shortUrls);
+            model.addAttribute("paginationUrl", "/");
             model.addAttribute("baseUrl", properties.baseUrl());
             return "index";
         }
@@ -93,6 +95,43 @@ public class HomeController {
     @GetMapping("/login")
     public String login() {
         return "login";
+    }
+
+    @GetMapping("/my-urls")
+    public String showUserUrls(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            Model model) {
+        var currentUserId = securityUtils.getCurrentUserId();
+        User user = securityUtils.getCurrentUser();
+        PagedResult<ShortUrlDto> myUrls =
+                shortUrlService.getUserShortUrls(currentUserId, page, size);
+        model.addAttribute("shortUrls", myUrls);
+        model.addAttribute("baseUrl", properties.baseUrl());
+        model.addAttribute("user", user);
+        model.addAttribute("paginationUrl", "/my-urls");
+        return "my-urls";
+    }
+
+    @PostMapping("/delete-urls")
+    public String deleteUrls(
+            @RequestParam(value = "ids", required = false) List<Long> ids,
+            RedirectAttributes redirectAttributes) {
+        if (ids == null || ids.isEmpty()) {
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage", "No URLs selected for deletion");
+            return "redirect:/my-urls";
+        }
+        try {
+            var currentUserId = securityUtils.getCurrentUserId();
+            shortUrlService.deleteUserShortUrls(ids, currentUserId);
+            redirectAttributes.addFlashAttribute("successMessage",
+                    "Selected URLs have been deleted successfully");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage",
+                    "Error deleting URLs: " + e.getMessage());
+        }
+        return "redirect:/my-urls";
     }
 
 }

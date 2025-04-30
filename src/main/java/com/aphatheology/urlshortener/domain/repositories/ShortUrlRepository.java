@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -28,4 +29,12 @@ public interface ShortUrlRepository extends JpaRepository<ShortUrl, Long> {
     @Query("SELECT s FROM ShortUrl s WHERE s.isPrivate = false")
     @EntityGraph(attributePaths = {"createdBy"})
     Page<ShortUrl> findPublicShortUrlsPageable(Pageable pageable);
+
+    Page<ShortUrl> findByCreatedById(Long userId, Pageable pageable);
+
+    @Modifying
+    void deleteByIdInAndCreatedById(List<Long> ids, Long userId);
+
+    @Query("select u from ShortUrl u left join fetch u.createdBy")
+    Page<ShortUrl> findAllShortUrls(Pageable pageable);
 }
