@@ -131,7 +131,7 @@ public class ShortUrlService {
             return Optional.empty();
         }
 
-        if(shortUrl.getPrivate() && shortUrl.getCreatedBy() != null && !shortUrl.getCreatedBy().getId().equals(userId)) {
+        if(shortUrl.getPrivate() != null && shortUrl.getPrivate() && shortUrl.getCreatedBy() != null && !shortUrl.getCreatedBy().getId().equals(userId)) {
             return Optional.empty();
         }
 

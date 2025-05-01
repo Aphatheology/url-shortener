@@ -16,7 +16,7 @@
 	<url/>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -87,6 +87,18 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<name>aphatheology/url-shortener</name>
+<!--						<build>-->
+<!--							<dockerfile>-->
+<!--								<buildArgs>-->
+<!--									<buildArg>JAR_FILE=${project.build.directory}/${project.build.finalName}.jar</buildArg>-->
+<!--								</buildArgs>-->
+<!--							</dockerfile>-->
+<!--						</build>-->
+					</image>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
