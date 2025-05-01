@@ -3,6 +3,7 @@ package com.aphatheology.urlshortener.domain.entities;
 import com.aphatheology.urlshortener.domain.models.Role;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -26,7 +27,7 @@ public class User {
     private Role role;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Instant createdAt = Instant.now();
 
     public Long getId() {
         return id;
@@ -68,11 +69,11 @@ public class User {
         this.role = role;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }
